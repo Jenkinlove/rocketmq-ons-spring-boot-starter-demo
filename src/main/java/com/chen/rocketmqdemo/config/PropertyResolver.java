@@ -8,9 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author: zhuCan
- * @date: 2020/4/19 19:41
- * @description: properties 配置文件属性注入到自定义注解里面 使用 spring expression language 读取
+ * properties 配置文件属性注入到自定义注解里面 使用 spring expression language 读取
  * 格式: ${propertyKey}
  */
 public class PropertyResolver {
