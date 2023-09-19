@@ -1,6 +1,10 @@
 package com.chen.rocketmqdemo.consumer;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.aliyun.openservices.ons.api.Action;
+import com.aliyun.openservices.ons.api.ConsumeContext;
+import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.SendResult;
 import com.chen.rocketmqdemo.config.BaseMessage;
 import com.chen.rocketmqdemo.producer.DefaultProducerProxy;
@@ -28,6 +32,18 @@ public abstract class RocketConsumerListener<T extends BaseMessage> implements R
 
     @Resource(name = "defaultProducer")
     private DefaultProducerProxy producer;
+
+
+    @Override
+    public Action consume(Message message, T messageBody, ConsumeContext consumeContext) {
+        log.info("mq接收消费消息: {}", JSON.toJSONString(message));
+        try {
+            dispatchMessage(messageBody);
+        } catch (Exception e) {
+            return Action.ReconsumeLater;
+        }
+        return Action.CommitMessage;
+    }
 
     /**
      * 消息处理

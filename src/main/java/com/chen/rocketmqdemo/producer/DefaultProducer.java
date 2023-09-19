@@ -1,6 +1,11 @@
 package com.chen.rocketmqdemo.producer;
 
-@ProducerConfig(group = "${rocketmq.producer.group}", topic = "${rocketmq.producer.topic}", value = "defaultProducer")
+import com.chen.rocketmqdemo.config.RocketProperties;
+
+@ProducerConfig(group = "${rocketmq.producer.orderRewrite.group}",
+        topic = "${rocketmq.producer.orderRewrite.topic}",
+        rocketKey = RocketProperties.RocketKey.ERP_KEY,
+        value = "defaultProducer")
 public class DefaultProducer extends DefaultProducerProxy {
 
 }

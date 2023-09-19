@@ -34,7 +34,7 @@ public class PropertyResolver {
       String propertyKey = expression.substring(2, expression.length() - 1);
       String value = environment.getProperty(propertyKey);
       if (StringUtils.hasText(value)) {
-        el = el.replaceFirst(expression, value);
+        el = el.replace(expression, value);
       } else {
         throw new RuntimeException("property " + propertyKey + "done not have default value in the .yml");
       }

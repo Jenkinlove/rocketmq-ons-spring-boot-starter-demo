@@ -41,14 +41,20 @@ public abstract class DefaultProducerProxy {
       logger.warn("配置开关已关闭!");
       return;
     }
-    Properties properties = configuration.rocketProperties();
-    properties.put(PropertyKeyConst.GROUP_ID, configuration.getGroupSuffix() + propertyResolver.springElResolver(producerConfig().group()));
+    RocketProperties.RocketConfig rocketConfig = configuration.getConfigs().get(producerConfig().rocketKey());
+    Properties properties = rocketConfig.rocketProperties();
+    properties.put(PropertyKeyConst.GROUP_ID, rocketConfig.getGroupSuffix() + propertyResolver.springElResolver(producerConfig().group()));
 
     producer = ONSFactory.createProducer(properties);
     logger.info("启动 producer :-> {}", properties.get(PropertyKeyConst.GROUP_ID));
 
     producer.start();
   }
+
+  public Producer getProducer() {
+    return producer;
+  }
+
 
   /**
    * 发送同步消息
@@ -123,7 +129,7 @@ public abstract class DefaultProducerProxy {
     if (producerConfig() != null) {
       return propertyResolver.springElResolver(producerConfig().topic());
     }
-    return configuration.getTopic();
+    return configuration.getConfigs().get(producerConfig().rocketKey()).getTopic();
   }
 
   /**
@@ -146,6 +152,5 @@ public abstract class DefaultProducerProxy {
   protected ProducerConfig producerConfig() {
     return this.getClass().getAnnotation(ProducerConfig.class);
   }
-
 }
 

@@ -47,15 +47,16 @@ public class ConsumerAutoRegister implements ApplicationListener<WebServerInitia
     List<RocketListener<?>> rocketListeners = new ArrayList<>();
 
     Arrays.stream(beanNamesForAnnotation)
-        .map(x -> (RocketListener<?>) autowireCapableBeanFactory.getBean(x))
-        .forEach(x -> {
-          ConsumerListener consumerListener = x.getClass().getAnnotation(ConsumerListener.class);
-          if ("on".equalsIgnoreCase(consumerListener.enable()) && configuration.isEnable()) {
-            for (int i = 0; i < consumerListener.consumers(); i++) {
-              rocketListeners.add(x);
-            }
-          }
-        });
+            .map(x -> (RocketListener<?>) autowireCapableBeanFactory.getBean(x))
+            .forEach(x -> {
+              ConsumerListener consumerListener = x.getClass().getSuperclass().getAnnotation(ConsumerListener.class);
+              RocketProperties.RocketConfig rocketConfig = configuration.getConfigs().get(RocketProperties.RocketKey.ERP_KEY);
+              if ("on".equalsIgnoreCase(consumerListener.enable()) && rocketConfig.isEnable()) {
+                for (int i = 0; i < consumerListener.consumers(); i++) {
+                  rocketListeners.add(x);
+                }
+              }
+            });
 
 
     // 注册消费者, 并执行订阅
@@ -69,11 +70,12 @@ public class ConsumerAutoRegister implements ApplicationListener<WebServerInitia
   private void listenerRegister(RocketListener<?>... listener) {
     Arrays.stream(listener).forEach(x -> {
       // 是否开启注册
-      Properties properties = configuration.rocketProperties();
+      RocketProperties.RocketConfig rocketConfig = configuration.getConfigs().get(RocketProperties.RocketKey.ERP_KEY);
+      Properties properties = rocketConfig.rocketProperties();
       // 获取注册注解
-      ConsumerListener consumerListener = x.getClass().getAnnotation(ConsumerListener.class);
+      ConsumerListener consumerListener = x.getClass().getSuperclass().getAnnotation(ConsumerListener.class);
 
-      properties.put(PropertyKeyConst.GROUP_ID, configuration.getGroupSuffix() + propertyResolver.resolvePlaceHolders(consumerListener.group()));
+      properties.put(PropertyKeyConst.GROUP_ID, rocketConfig.getGroupSuffix() + propertyResolver.resolvePlaceHolders(consumerListener.group()));
       properties.put(PropertyKeyConst.MessageModel, propertyResolver.resolvePlaceHolders(consumerListener.pattern()));
 
       Consumer consumer = ONSFactory.createConsumer(properties);

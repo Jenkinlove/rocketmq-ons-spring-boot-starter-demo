@@ -34,4 +34,8 @@ public @interface ProducerConfig {
    */
   String value() default "";
 
+  /**
+   * 配置文件的key
+   */
+  String rocketKey();
 }

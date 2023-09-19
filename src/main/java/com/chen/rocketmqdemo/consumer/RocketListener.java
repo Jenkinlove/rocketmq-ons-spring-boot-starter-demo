@@ -7,7 +7,6 @@ import com.aliyun.openservices.ons.api.MessageListener;
 import com.aliyun.openservices.shade.com.alibaba.fastjson.JSON;
 import com.aliyun.openservices.shade.com.alibaba.fastjson.TypeReference;
 import com.aliyun.openservices.shade.com.alibaba.fastjson.parser.Feature;
-import com.chen.rocketmqdemo.config.BaseMessage;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.ParameterizedType;
@@ -29,22 +28,21 @@ public interface RocketListener<T> extends MessageListener {
 
   default TypeReference<T> getJsonType() {
     try {
-      Type[] interfaces = getClass().getGenericInterfaces();
-      for (Type anInterface : interfaces) {
-        if (anInterface.getTypeName().contains(RocketListener.class.getTypeName())) {
-          Type[] actualTypeArguments = ((ParameterizedType) anInterface).getActualTypeArguments();
-
-          if (actualTypeArguments != null && actualTypeArguments.length > 0) {
+      if (RocketConsumerListener.class.equals(getClass().getSuperclass())) {
+        Type genericSuperclass = getClass().getGenericSuperclass();
+        if (genericSuperclass instanceof ParameterizedType) {
+          ParameterizedType parameterizedType = (ParameterizedType) genericSuperclass;
+          Type[] typeArguments = parameterizedType.getActualTypeArguments();
+          if (typeArguments != null && typeArguments.length > 0) {
             return new TypeReference<T>() {
               @Override
               public Type getType() {
-                return actualTypeArguments[0];
+                return typeArguments[0];
               }
             };
           }
         }
       }
-
     }catch (Exception e){
       e.printStackTrace();
     }

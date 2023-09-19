@@ -1,18 +1,28 @@
 
+aliyun:
+  accessKeyId: xxxxx
+  accessKeySecret: xxxxx
+
 rocketmq:
-  nameSrvAddr: MQ_INST_1817477409699778_BYN5707g.mq-internet-access.mq-internet.aliyuncs.com:80
-  accessKey: ${aliyun.accessKeyId}
-  secretKey: ${aliyun.accessKeySecret}
+  configs:
+    erp:
+      nameSrvAddr: http://localhost:80
+      accessKey: ${aliyun.accessKeyId}
+      secretKey: ${aliyun.accessKeySecret}
+      enable: true
+    file:
+      nameSrvAddr: http://localhost:80
+      accessKey: ${aliyun.accessKeyId}
+      secretKey: ${aliyun.accessKeySecret}
+      enable: true
   producer:
-    group: ERP_PRODUCER
-    topic: *
-  consumer:
+    orderRewrite:
+      group: ERP_ORDER_REWRITE
+      topic: ERP_ORDER_REWRITE
     file:
       topic: FILE
-      group: GID_FILE
+      group: FILE
+  consumer:
     orderRewrite:
       topic: ERP_ORDER_REWRITE
-      group: GID_ERP_ORDER_REWRITE
-      tags:
-        - A
-        - B
+      group: ERP_ORDER_REWRITE

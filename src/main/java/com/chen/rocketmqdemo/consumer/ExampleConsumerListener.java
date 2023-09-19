@@ -15,11 +15,11 @@ import lombok.extern.slf4j.Slf4j;
  * MessageData 为消息体类型class
  * consume 为消费业务逻辑
  */
+@Slf4j
 @ConsumerListener(group = "${rocketmq.consumer.orderRewrite.group}",
         topic = "${rocketmq.consumer.orderRewrite.topic}",
-        tags = "${rocketmq.consumer.orderRewrite.tags}",
-        consumers = 1)
-@Slf4j
+        tags = "rewrite"
+)
 public class ExampleConsumerListener extends RocketConsumerListener<ExampleMessage> {
   /**
    * 消息处理
@@ -30,16 +30,5 @@ public class ExampleConsumerListener extends RocketConsumerListener<ExampleMessa
   protected void handleMessage(ExampleMessage message) {
     //todo 业务代码
 
-  }
-
-  @Override
-  public Action consume(Message message, ExampleMessage messageBody, ConsumeContext consumeContext) {
-    log.info("mq接收消费消息: {}", JSON.toJSONString(message));
-    try {
-      super.dispatchMessage(messageBody);
-    } catch (Exception e) {
-      return Action.ReconsumeLater;
-    }
-    return Action.CommitMessage;
   }
 }
